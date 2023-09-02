@@ -1,6 +1,9 @@
 import { Link } from "react-router-dom";
+import { FavouriteContext } from "../context/favourite";
+import { useContext } from 'react';
 
-const MovieCard = ({ movie , setFavouries, favourites }) => {
+const MovieCard = ({ movie  }) => {
+    const {setFavouries} = useContext(FavouriteContext);
     const handleFavouriteClick = () => {
         setFavouries((previousFavMovies) => [...previousFavMovies, movie]);
     }

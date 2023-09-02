@@ -26,10 +26,20 @@ const MovieDetailPage = () => {
     return (
         <div>
             <h1>Movie Detail Page</h1>
-            <Banner title={movieDetail?.title} description={movieDetail?.overview} imageUrl={`https://image.tmdb.org/t/p/original${movieDetail?.poster_path}`}/>
+            <BannerWithPadding>
+                <Banner title={movieDetail?.title} description={movieDetail?.overview} imageUrl={`https://image.tmdb.org/t/p/original${movieDetail?.poster_path}`}/>
+            </BannerWithPadding>
 
         </div>
     )
 }
 
 export default MovieDetailPage;
+
+const BannerWithPadding = ({ children }) => {
+    return (
+        <div style={{padding: '50px', border: '1px solid #ccc'}}>
+            { children }
+        </div>
+    )
+}

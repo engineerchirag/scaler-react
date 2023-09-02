@@ -1,11 +1,11 @@
 import MovieHeading from "./MovieHeading";
 import MovieList from "./MovieList";
 
-const MovieListWrapper = ({ setFavouries, favourites }) => {
+const MovieListWrapper = () => {
     return (
         <div className="movie-list-wrapper">
             <MovieHeading />
-            <MovieList setFavouries={setFavouries} favourites={favourites}  />
+            <MovieList />
         </div>
     );
 }

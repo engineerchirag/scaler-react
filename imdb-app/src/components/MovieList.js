@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import Pagination from "./Pagination";
 // import { movies as movieData } from '../mockData/movieData';
 
-const MovieList = ({ setFavouries, favourites }) => {
+const MovieList = () => {
     const [movies, setMovies] = useState();
     const [moviePageStore, setMoviePageStore] = useState({});
 
@@ -35,7 +35,7 @@ const MovieList = ({ setFavouries, favourites }) => {
         <div className="movie-list">
             {
                 movies?.results?.map((movie) => {
-                    return (<MovieCard movie={movie} setFavouries={setFavouries} favourites={favourites} />);
+                    return (<MovieCard movie={movie} />);
                 })
             }
             {

@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useMemo, useContext } from "react";
+import { FavouriteContext } from "../context/favourite";
 
 let genreids = {
     28: "Action",
@@ -22,40 +23,38 @@ let genreids = {
     37: "Western",
   };
 
-const Favourites = ({ favourites }) => {
+const Favourites = () => {
 
-    const [genres, setGenres] = useState([]);
+    const { favourites } = useContext(FavouriteContext);
     const [favouriteList, setFavouriteList] = useState(favourites);
     const [selectedGenreId, setSelectedGenreId] = useState();
     const [searchedFavourites, setSearchedFavourites] = useState(favourites);
+    
+    const genres = useMemo(() => Array.from(new Set(favourites.map(favourite => favourite.genre_ids[0]))), [favourites]);
+        
 
-    useEffect(() => {
-        const genresIds = Array.from(new Set(favourites.map(favourite => favourite.genre_ids[0])));
-        setGenres(genresIds);
-    }, [favourites]);
-
-    const handleSearch = (e) => {
+    const handleSearch = useCallback( (e) => {
         const searchText = e.target.value;
         setFavouriteList(() => {
             const filteredFavList = searchedFavourites.filter(movie => movie.title.toLowerCase().includes(searchText.toLowerCase()));
             return filteredFavList;
         })
-    };
+    }, [searchedFavourites]);
 
-    const filterFavourites = (genreId) => {
+    const filterFavourites = useCallback((genreId) => {
         setSearchedFavourites(() => {
             const filteredFavList = genreId ? favourites.filter(movie => movie.genre_ids[0] == genreId) : favourites;
             setFavouriteList(filteredFavList);
             return filteredFavList;
         })
-    }
+    }, [favourites]);
 
-    const handleSort = (sortType) => {
+    const handleSort = useCallback((sortType) => {
         setFavouriteList(() => {
             const filteredFavList = [...searchedFavourites].sort((a, b) => sortType ? a.popularity - b.popularity : b.popularity - a.popularity );
             return filteredFavList;
         })
-    }
+    }, [searchedFavourites]);
 
     return (
         <div className="favourite-page">

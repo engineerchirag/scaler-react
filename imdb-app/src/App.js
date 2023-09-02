@@ -10,19 +10,22 @@ import Favourites from './components/Favourites';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import MovieDetailPage from './components/MovieDetailPage';
 import AddMovie from './components/AddMovie';
+import FavouriteProvider from './context/favourite';
 
 function App() {
-  const [favourites, setFavouries] = useState([]);
+  
   return (
    <div className='container'>
       <BrowserRouter>
         <Header/>
-        <Routes>
-            <Route path="/" element={<MoviePage setFavouries={setFavouries} favourites={favourites} />} />
-            <Route path="/favourites" element={<Favourites favourites={favourites} />} />
-            <Route path="/detail/:movieId" element={<MovieDetailPage />} />
-            <Route path="/add-movie" element={<AddMovie />} />
-        </Routes>        
+        <FavouriteProvider>
+          <Routes>
+              <Route path="/" element={<MoviePage />} />
+              <Route path="/favourites" element={<Favourites />} />
+              <Route path="/detail/:movieId" element={<MovieDetailPage />} />
+              <Route path="/add-movie" element={<AddMovie />} />
+          </Routes>   
+        </FavouriteProvider>     
       </BrowserRouter>
    </div>
   );
