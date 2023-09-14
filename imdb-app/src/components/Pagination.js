@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { setActivePage } from "../store/productReducer";
+import { useDispatch, useSelector } from 'react-redux';
 
 const getPageArray = (arrayLength=0, startNumber) => {
     return [...Array(arrayLength)].map((item, idx) => {
@@ -6,14 +8,14 @@ const getPageArray = (arrayLength=0, startNumber) => {
     })
 }
 
-const Pagination = ({totalPages, fetchMovieData}) => {
+const Pagination = ({totalPages}) => {
     const totalPageButtons = Math.min(totalPages, 10);
     const pageArray = getPageArray(totalPageButtons, 0);
     const [pages, setPages] = useState(pageArray);
-    const [activePage, setActivePage] = useState(1);
+    const { activePage } = useSelector((state) => state.products);
+    const dispatch = useDispatch();
 
     useEffect(() => {
-        fetchMovieData(activePage);
         if (activePage > pages[pages.length - 1]) {
             const startNumber = activePage - totalPageButtons;
             const newPageArray = getPageArray(totalPageButtons, startNumber)
@@ -29,13 +31,13 @@ const Pagination = ({totalPages, fetchMovieData}) => {
 
     return (
         <div className="pagination">
-            <button onClick={() => { setActivePage(activePage - 1)}} disabled={activePage === 1}>Prev </button>
+            <button onClick={() => { dispatch(setActivePage(activePage - 1))}} disabled={activePage === 1}>Prev </button>
             {
                 pages?.map((pageNumber) => {
-                    return (<button className={activePage === pageNumber ? 'selected' : ''} onClick={() => {setActivePage(pageNumber)}}>{pageNumber}</button>)
+                    return (<button className={activePage === pageNumber ? 'selected' : ''} onClick={() => {dispatch(setActivePage(pageNumber))}}>{pageNumber}</button>)
                 })
             }
-            <button disabled={totalPages === activePage}  onClick={() => { setActivePage(activePage + 1) }}>Next</button>
+            <button disabled={totalPages === activePage}  onClick={() => { dispatch(setActivePage(activePage + 1)) }}>Next</button>
         </div>
     )
 }

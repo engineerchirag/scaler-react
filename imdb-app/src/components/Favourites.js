@@ -1,5 +1,7 @@
 import { useEffect, useState, useCallback, useMemo, useContext } from "react";
 import { FavouriteContext } from "../context/favourite";
+import { useSelector, useDispatch } from 'react-redux';
+import { setSelectedGenreId, setFavouriteList, setSearchedFavourites } from './../store/favouriteReducer';
 
 let genreids = {
     28: "Action",
@@ -25,36 +27,29 @@ let genreids = {
 
 const Favourites = () => {
 
-    const { favourites } = useContext(FavouriteContext);
-    const [favouriteList, setFavouriteList] = useState(favourites);
-    const [selectedGenreId, setSelectedGenreId] = useState();
-    const [searchedFavourites, setSearchedFavourites] = useState(favourites);
+    const { favourites, selectedGenreId, favouriteList, searchedFavourites } = useSelector((state) => state.favourites);
+    const dispatch = useDispatch();
     
     const genres = useMemo(() => Array.from(new Set(favourites.map(favourite => favourite.genre_ids[0]))), [favourites]);
-        
 
     const handleSearch = useCallback( (e) => {
         const searchText = e.target.value;
-        setFavouriteList(() => {
-            const filteredFavList = searchedFavourites.filter(movie => movie.title.toLowerCase().includes(searchText.toLowerCase()));
-            return filteredFavList;
-        })
-    }, [searchedFavourites]);
-
-    const filterFavourites = useCallback((genreId) => {
-        setSearchedFavourites(() => {
-            const filteredFavList = genreId ? favourites.filter(movie => movie.genre_ids[0] == genreId) : favourites;
-            setFavouriteList(filteredFavList);
-            return filteredFavList;
-        })
-    }, [favourites]);
+        dispatch(setFavouriteList({ type: 'SEARCH', searchText }));
+    }, []);
 
     const handleSort = useCallback((sortType) => {
-        setFavouriteList(() => {
-            const filteredFavList = [...searchedFavourites].sort((a, b) => sortType ? a.popularity - b.popularity : b.popularity - a.popularity );
-            return filteredFavList;
-        })
-    }, [searchedFavourites]);
+        dispatch(setFavouriteList({ type: 'SORT', sortType }));
+    }, []);
+
+
+    const filterFavourites = useCallback(() => {
+        dispatch(setSearchedFavourites());
+        dispatch(setFavouriteList({ type: 'CATEGORY' }));
+    }, []);
+
+    useEffect(() => {
+        filterFavourites();
+    }, [selectedGenreId]);
 
     return (
         <div className="favourite-page">
@@ -63,9 +58,9 @@ const Favourites = () => {
                 <div className="left-section">
                     <div className="genres-wrapper">
                         <ul>
-                            <li className={!selectedGenreId ? 'selected' : ''} onClick={() => { setSelectedGenreId(); filterFavourites();}}> All Genres</li>
+                            <li className={!selectedGenreId ? 'selected' : ''} onClick={() => { dispatch(setSelectedGenreId()); }}> All Genres</li>
                             {genres?.map(genreId => {
-                                return (<li className={selectedGenreId === genreId ? 'selected' : ''} onClick={() => { setSelectedGenreId(genreId); filterFavourites(genreId)}}>{genreids[genreId]}</li>)
+                                return (<li className={selectedGenreId === genreId ? 'selected' : ''} onClick={() => { dispatch(setSelectedGenreId(genreId));}}>{genreids[genreId]}</li>)
                             })}
                         </ul>
                     </div>

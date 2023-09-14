@@ -2,45 +2,39 @@ import MovieCard from "./MovieCard";
 import { useState, useEffect } from 'react';
 import Pagination from "./Pagination";
 // import { movies as movieData } from '../mockData/movieData';
+import { useSelector, useDispatch } from 'react-redux';
+import { setMoviePageStore } from "../store/productReducer";
 
 const MovieList = () => {
-    const [movies, setMovies] = useState();
-    const [moviePageStore, setMoviePageStore] = useState({});
 
-    const fetchMovieData = (pageNumber=1) => {
-        const pageWiseMovie = moviePageStore[pageNumber];
-        if (pageWiseMovie) {
-            setMovies(pageWiseMovie);
-        } else {
-            fetch(`https://api.themoviedb.org/3/movie/popular?api_key=0b5415eb9bf023d556ef265b425e0e4a&language=en-US&page=${pageNumber}`)
+    const { activePage, moviePageStore } = useSelector((state) => state.products);
+    const dispatch = useDispatch();
+
+    const fetchMovieData = () => {
+        const pageWiseMovie = moviePageStore[activePage];
+        if (!pageWiseMovie) {
+            fetch(`https://api.themoviedb.org/3/movie/popular?api_key=0b5415eb9bf023d556ef265b425e0e4a&language=en-US&page=${activePage}`)
                 .then(res => res.json())
                 .then(data => {
-                    setMovies(data);
-                    setMoviePageStore((preVal)  => {
-                        return  {
-                            ...preVal,
-                            [pageNumber]: data
-                        }
-                    });
+                    dispatch(setMoviePageStore(data));
                 });
         }
     }
 
     useEffect(() => {
         fetchMovieData();
-    }, []);
-
+    }, [activePage]);
 
     return (
         <div className="movie-list">
             {
-                movies?.results?.map((movie) => {
+                moviePageStore?.[activePage]?.results?.map((movie) => {
                     return (<MovieCard movie={movie} />);
                 })
             }
             {
-                movies?.total_pages && (
-                    <Pagination totalPages={movies?.total_pages} fetchMovieData={fetchMovieData}/>
+                moviePageStore?.[activePage]?.total_pages && (
+                    <Pagination totalPages={moviePageStore?.[activePage]?.total_pages}/>
                 )
             }
         </div>
